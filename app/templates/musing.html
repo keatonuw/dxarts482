@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>👀</title>
+  <link href="static/style.css" rel="stylesheet">
+</head>
+
+<body class={{style}}>
+  <div>
+    <h1>{{title}}</h1>
+    {% for type, text in body %}
+    {% if type == 'main' %}
+    <p>{{text}}</p>
+    {% elif type == 'scroll' %}
+    <marquee>{{text}}</marquee>
+    {% else %}
+    <p><em>{{text}}</em></p>
+    {% endif %}
+    {% endfor %}
+  </div>
+</body>
+
+</html>

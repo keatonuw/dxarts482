@@ -43,22 +43,38 @@ def load_models(modelpaths: List) -> List:
     return models
 
 
-def test_generate_article(models: List) -> str:
+def test_generate_article(models: List) -> tuple[str | None, List]:
     # want title followed by several paragraphs. ideally in some matter of feedback?
     main_model: markovify.Text = random.choice(models)
     quote_model: markovify.Text = random.choice(models)
     title = main_model.make_short_sentence(75)
-    body = ""
-    while len(body) < 500:
-        s = main_model.make_sentence()
-        body += f"\n{main_model.make_sentence()}"
+    title = title.replace("ChatGPT", "GOD")
+    body = []
+    prev_mode = "quote"
+    while len(body) < 20:
+        m = main_model
+        if prev_mode == "quote":
+            prev_mode = "main"
+        else:
+            prev_mode = random.choice(["main", "quote", "scroll"])
+            if prev_mode == "main":
+                m = main_model
+            else:
+                m = quote_model
+        s = m.make_sentence()
+        s = s.replace("ChatGPT", "GOD")
+        body.append((prev_mode, f"\n{s}"))
 
-    return f"# {title}\n{body}"
+    return (title, body)
 
 
 ms = []
-ms.append(create_save_load("gpt-tweets"))
-ms.append(create_save_load("ibos-select"))
 
-for i in range(2):
-    print(test_generate_article(ms))
+
+def init():
+    ms.append(create_save_load("gpt-tweets"))
+    ms.append(create_save_load("ibos-select"))
+
+
+def gen():
+    return test_generate_article(ms)
