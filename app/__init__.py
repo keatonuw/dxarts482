@@ -7,11 +7,16 @@ from flask import send_file
 import io
 from diffusers import StableDiffusionPipeline
 import random
+import torch
 
 from . import composer
 
 pipe = StableDiffusionPipeline.from_pretrained("cw/")
-pipe.to("mps")  # or CUDA on windows/linux
+# TODO: need to check what is available!!!
+if torch.cuda.is_available():
+    pipe.to("cuda")
+elif torch.backends.mps.is_available():
+    pipe.to("mps")  # or CUDA on windows/linux
 
 composer.init()
 print("MODELS LOADED")

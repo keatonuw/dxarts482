@@ -1,7 +1,7 @@
 */__pycache__/*
 *.DS_Store
 *.json
-data/*.txt
+data/*/*.txt
 
 /cw/
 

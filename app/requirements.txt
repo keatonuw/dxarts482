@@ -2,3 +2,4 @@ flask
 markovify
 transformers
 diffusers
+torch
