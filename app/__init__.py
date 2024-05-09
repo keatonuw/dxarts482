@@ -35,6 +35,10 @@ def create_app():
             style=random.choice(["dark", "light", "matrix", "blue"]),
         )
 
+    @app.route("/health")
+    def health():
+        return "I AM ALIVE!"
+
     @app.route("/image")
     def image():
         prompt = "dark, scary, grainy cctv footage l34ks of an urban city street"

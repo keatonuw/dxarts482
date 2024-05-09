@@ -2,6 +2,36 @@ from typing import List
 import os
 import random
 import markovify
+import re
+
+filler_titles = [
+    "",
+]
+
+filler_content = [
+    "",
+]
+
+replacement_targets = [
+    "ChatGPT",
+    "GPT",
+    "Elon",
+    "Musk",
+    "Bitcoin",
+    "Altman",
+    "OpenAI",
+    "Crypto",
+    "Etherium",
+]
+
+replace_values = [
+    "GOD",
+    "INTERNET",
+    "NETWORK",
+    "CONNECTION",
+    "SPIRITUALITY",
+    "SHE",
+]
 
 
 def create_save_load(dataset: str) -> markovify.Text:
@@ -43,12 +73,20 @@ def load_models(modelpaths: List) -> List:
     return models
 
 
+def censor(s):
+    for t in replacement_targets:
+        s = re.sub(t, random.choice(replace_values), s, flags=re.I)
+    return s
+
+
 def test_generate_article(models: List) -> tuple[str | None, List]:
     # want title followed by several paragraphs. ideally in some matter of feedback?
     main_model: markovify.Text = random.choice(models)
     quote_model: markovify.Text = random.choice(models)
     title = main_model.make_short_sentence(75)
-    title = title.replace("ChatGPT", "GOD")
+    if title is None:
+        title = random.choice(filler_titles)
+    title = censor(title)
     body = []
     prev_mode = "quote"
     while len(body) < 20:
@@ -62,7 +100,9 @@ def test_generate_article(models: List) -> tuple[str | None, List]:
             else:
                 m = quote_model
         s = m.make_sentence()
-        s = s.replace("ChatGPT", "GOD")
+        if s is None:
+            s = random.choice(filler_content)
+        s = censor(s)
         body.append((prev_mode, f"\n{s}"))
 
     return (title, body)
