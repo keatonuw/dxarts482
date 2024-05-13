@@ -4,12 +4,13 @@
 from flask import Flask
 from flask import render_template
 from flask import send_file
+from flask import request
 import io
 from diffusers import StableDiffusionPipeline
 import random
 import torch
 
-from . import composer
+from . import promptsynth as ps
 
 pipe = StableDiffusionPipeline.from_pretrained("cw/")
 # TODO: need to check what is available!!!
@@ -18,8 +19,7 @@ if torch.cuda.is_available():
 elif torch.backends.mps.is_available():
     pipe.to("mps")  # or CUDA on windows/linux
 
-composer.init()
-print("MODELS LOADED")
+synth = ps.PromptSynth(pipe)
 
 
 def create_app():
@@ -27,25 +27,36 @@ def create_app():
 
     @app.route("/")
     def main():
-        title, body = composer.gen()
-        return render_template(
-            "musing.html",
-            title=title,
-            body=body,
-            style=random.choice(["dark", "light", "matrix", "blue"]),
-        )
+        return synth.generate_page()
 
     @app.route("/health")
     def health():
         return "I AM ALIVE!"
 
+    @app.route("/log", methods=["POST"])
+    def log():
+        # TODO: log data from the client. will be some collection of positions.
+        content = request.json
+        if content is None:
+            return "error"
+        if "pos" in content:
+            print(content["pos"])
+            # TODO: parse content into list of (x, y, w, h) tuples
+            positions = []
+            for p in content["pos"]:
+                positions.append((p["x"], p["y"], p["w"], p["h"]))
+            synth.consume_positions(positions)
+
+            return "ok"
+        return "error"
+
+    @app.route("/state")
+    def state():
+        return synth.get_state()
+
     @app.route("/image")
     def image():
-        prompt = "dark, scary, grainy cctv footage l34ks of an urban city street"
-        image = pipe(prompt, num_inference_steps=5, guidance_scale=7.5).images[0]
-        bts = io.BytesIO()
-        image.save(bts, format="jpeg")
-        bts.seek(0)
+        bts = synth.generate_image()
         return send_file(
             bts,
             mimetype="image/jpeg",

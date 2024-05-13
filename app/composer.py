@@ -1,4 +1,4 @@
-from typing import List
+from typing import Dict, List
 import os
 import random
 import markovify
@@ -108,13 +108,17 @@ def test_generate_article(models: List) -> tuple[str | None, List]:
     return (title, body)
 
 
-ms = []
+markov_models: Dict[str, markovify.Text] = {}
 
 
 def init():
-    ms.append(create_save_load("gpt-tweets"))
-    ms.append(create_save_load("ibos-select"))
+    markov_models["gpt"] = create_save_load("gpt-tweets")
+    markov_models["ibos"] = create_save_load("ibos-select")
 
 
 def gen():
-    return test_generate_article(ms)
+    return test_generate_article([v for _, v in markov_models])
+
+
+def gen_with(models):
+    return test_generate_article([markov_models[k] for k in models if k in models])
