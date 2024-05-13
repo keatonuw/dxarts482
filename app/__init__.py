@@ -6,13 +6,17 @@ from flask import render_template
 from flask import send_file
 from flask import request
 import io
-from diffusers import StableDiffusionPipeline
+from diffusers import StableDiffusionImg2ImgPipeline
 import random
 import torch
 
 from . import promptsynth as ps
 
-pipe = StableDiffusionPipeline.from_pretrained("cw/")
+model_path = "cw/"
+pipe = StableDiffusionImg2ImgPipeline.from_pretrained(
+    model_path, torch_dtype=torch.float16
+)
+
 # TODO: need to check what is available!!!
 if torch.cuda.is_available():
     pipe.to("cuda")

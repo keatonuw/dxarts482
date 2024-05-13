@@ -1,4 +1,5 @@
 from flask import render_template
+from PIL import Image, ImageDraw
 from typing import Text
 import random
 import io
@@ -34,9 +35,15 @@ class PromptSynth:
 
     # Generates an image response based on current state
     def generate_image(self) -> io.BytesIO:
-        prompt = self.__get_prompt()
-        # TODO: make this use image to image!
-        image = self.pipe(prompt, num_inference_steps=15, guidance_scale=7.5).images[0]
+        prompt = self.__get_text_prompt()
+        ref = self.__get_image_prompt()
+        image = self.pipe(
+            prompt=prompt,
+            image=ref,
+            strength=0.75,
+            num_inference_steps=20,
+            guidance_scale=7.5,
+        ).images[0]
         bts = io.BytesIO()
         image.save(bts, format="jpeg")
         bts.seek(0)
@@ -45,7 +52,10 @@ class PromptSynth:
     # Consume positions (a list of (x, y, w, h) rectangles) to inform state
     def consume_positions(self, positions):
         # forget the past
-        self.entities = positions
+        self.entities = [
+            (x / 1280 * 256, y / 720 * 256, w / 1280 * 256, h / 720 * 256)
+            for x, y, w, h in positions
+        ]
         # determine the future
         idx = 0
         if len(self.entities) < 1:
@@ -56,8 +66,8 @@ class PromptSynth:
             idx = 3
         else:
             # many objects
-            idx = random.randint(4, len(states))
-        self.state = states[idx]
+            idx = random.randint(4, len(states) - 1)
+        self.state = states[idx % len(states)]
 
     # Gets the current system state, as a string for TD client to interpret
     def get_state(self) -> Text:
@@ -78,5 +88,12 @@ class PromptSynth:
         # -> web: display generate pages on the website
         return self.state
 
-    def __get_prompt(self):
-        return ""
+    def __get_text_prompt(self):
+        return "digital hacked city security camera overlooking an empty space. dark and glitchy cctv street footage l34ks at night. black and white grainy and lossy footage."
+
+    def __get_image_prompt(self):
+        img = Image.new("RGB", (256, 256), "gray")
+        draw = ImageDraw.Draw(img)
+        for x, y, w, h in self.entities:
+            draw.rectangle([x, y, x + w, y + h], fill="white")
+        return img
