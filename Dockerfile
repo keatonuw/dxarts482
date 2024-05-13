@@ -9,5 +9,6 @@ COPY app/requirements.txt /src
 COPY data/* /src/data/
 RUN pip install -r requirements.txt
 COPY . .
-EXPOSE 5000
-CMD ["flask", "--app", "app", "run", "--host", "0.0.0.0"]
+EXPOSE 80
+CMD ["flask", "--app", "app", "run", "--host", "0.0.0.0", "--port", "80"]
+
