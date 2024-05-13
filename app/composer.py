@@ -1,7 +1,37 @@
-from typing import List
+from typing import Dict, List
 import os
 import random
 import markovify
+import re
+
+filler_titles = [
+    "",
+]
+
+filler_content = [
+    "",
+]
+
+replacement_targets = [
+    "ChatGPT",
+    "GPT",
+    "Elon",
+    "Musk",
+    "Bitcoin",
+    "Altman",
+    "OpenAI",
+    "Crypto",
+    "Etherium",
+]
+
+replace_values = [
+    "GOD",
+    "INTERNET",
+    "NETWORK",
+    "CONNECTION",
+    "SPIRITUALITY",
+    "SHE",
+]
 
 
 def create_save_load(dataset: str) -> markovify.Text:
@@ -43,22 +73,52 @@ def load_models(modelpaths: List) -> List:
     return models
 
 
-def test_generate_article(models: List) -> str:
+def censor(s):
+    for t in replacement_targets:
+        s = re.sub(t, random.choice(replace_values), s, flags=re.I)
+    return s
+
+
+def test_generate_article(models: List) -> tuple[str | None, List]:
     # want title followed by several paragraphs. ideally in some matter of feedback?
     main_model: markovify.Text = random.choice(models)
     quote_model: markovify.Text = random.choice(models)
     title = main_model.make_short_sentence(75)
-    body = ""
-    while len(body) < 500:
-        s = main_model.make_sentence()
-        body += f"\n{main_model.make_sentence()}"
+    if title is None:
+        title = random.choice(filler_titles)
+    title = censor(title)
+    body = []
+    prev_mode = "quote"
+    while len(body) < 20:
+        m = main_model
+        if prev_mode == "quote":
+            prev_mode = "main"
+        else:
+            prev_mode = random.choice(["main", "quote", "scroll"])
+            if prev_mode == "main":
+                m = main_model
+            else:
+                m = quote_model
+        s = m.make_sentence()
+        if s is None:
+            s = random.choice(filler_content)
+        s = censor(s)
+        body.append((prev_mode, f"\n{s}"))
 
-    return f"# {title}\n{body}"
+    return (title, body)
 
 
-ms = []
-ms.append(create_save_load("gpt-tweets"))
-ms.append(create_save_load("ibos-select"))
+markov_models: Dict[str, markovify.Text] = {}
 
-for i in range(2):
-    print(test_generate_article(ms))
+
+def init():
+    markov_models["gpt"] = create_save_load("gpt-tweets")
+    markov_models["ibos"] = create_save_load("ibos-select")
+
+
+def gen():
+    return test_generate_article([v for _, v in markov_models])
+
+
+def gen_with(models):
+    return test_generate_article([markov_models[k] for k in models if k in models])
