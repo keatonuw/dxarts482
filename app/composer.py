@@ -79,7 +79,7 @@ def censor(s):
     return s
 
 
-def test_generate_article(models: List) -> tuple[str | None, List]:
+def test_generate_article(models: List):
     # want title followed by several paragraphs. ideally in some matter of feedback?
     main_model: markovify.Text = random.choice(models)
     quote_model: markovify.Text = random.choice(models)
