@@ -93,10 +93,8 @@ class PromptSynth:
         return "digital hacked city security camera overlooking an empty space. dark and glitchy cctv street footage l34ks at night. black and white grainy and lossy footage."
 
     def __get_image_prompt(self):
-        img = Image.new("RGB", (256, 256), "gray")
+        img = Image.new("RGBA", (256, 256), "gray")
         draw = ImageDraw.Draw(img)
         for x, y, w, h in self.entities:
-            draw.rectangle(
-                [x, y, x + w, y + h], fill=(120, 120, 120, 200), outline="white"
-            )
+            draw.rectangle([x, y, x + w, y + h], fill="#eeeeeecc", outline="white")
         return img
