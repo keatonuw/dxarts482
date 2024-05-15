@@ -46,7 +46,7 @@ class PromptSynth:
         ).images[0]
         bts = io.BytesIO()
         # image.save(bts, format="jpeg")
-        ref.save(bts, format="jpeg")
+        ref.save(bts, format="png")
         bts.seek(0)
         return bts
 
