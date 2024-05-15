@@ -60,8 +60,8 @@ def create_app():
         bts = synth.generate_image()
         return send_file(
             bts,
-            mimetype="image/png",
-            download_name="gen.png",
+            mimetype="image/jpeg",
+            download_name="gen.jpeg",
             as_attachment=True,
         )
 
