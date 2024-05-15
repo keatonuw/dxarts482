@@ -46,7 +46,7 @@ class PromptSynth:
         ).images[0]
         bts = io.BytesIO()
         # image.save(bts, format="jpeg")
-        ref.save(bts, format="png")
+        ref.save(bts, format="jpeg")
         bts.seek(0)
         return bts
 
@@ -97,4 +97,6 @@ class PromptSynth:
         draw = ImageDraw.Draw(img)
         for x, y, w, h in self.entities:
             draw.rectangle([x, y, x + w, y + h], fill="#eeeeeecc", outline="white")
-        return img
+        bg = Image.new("RGB", img.size, "gray")
+        bg.paste(img, mask=img.split()[3])
+        return bg
