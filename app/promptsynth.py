@@ -96,7 +96,7 @@ class PromptSynth:
         img = Image.new("RGBA", (256, 256), "gray")
         draw = ImageDraw.Draw(img, "RGBA")
         for x, y, w, h in self.entities:
-            draw.rectangle([x, y, x + w, y + h], fill="#eeeeeecc", outline="white")
+            draw.rectangle([x, y, x + w, y + h], fill="#aaaaaacc", outline="black")
         bg = Image.new("RGB", img.size, "gray")
         bg.paste(img, mask=img.split()[3])
         return bg
