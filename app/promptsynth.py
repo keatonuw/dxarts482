@@ -1,5 +1,6 @@
 from flask import render_template
 from PIL import Image, ImageDraw
+import numpy as np
 from typing import Text
 import random
 import io
@@ -41,7 +42,7 @@ class PromptSynth:
             prompt=prompt,
             image=ref,
             strength=0.75,
-            num_inference_steps=20,
+            num_inference_steps=50,
             guidance_scale=7.5,
         ).images[0]
         bts = io.BytesIO()
@@ -93,7 +94,9 @@ class PromptSynth:
         return "digital hacked city security camera overlooking an empty space. dark and glitchy cctv street footage l34ks at night. black and white grainy and lossy footage."
 
     def __get_image_prompt(self):
-        img = Image.new("RGBA", (256, 256), "gray")
+        img = Image.fromarray(
+            np.random.randint(0, 255, (256, 256, 4), dtype=np.dtype("uint8"))
+        )
         draw = ImageDraw.Draw(img, "RGBA")
         for x, y, w, h in self.entities:
             draw.rectangle([x, y, x + w, y + h], fill="#aaaaaacc", outline="black")
