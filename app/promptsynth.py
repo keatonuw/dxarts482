@@ -94,7 +94,7 @@ class PromptSynth:
 
     def __get_image_prompt(self):
         img = Image.new("RGBA", (256, 256), "gray")
-        draw = ImageDraw.Draw(img)
+        draw = ImageDraw.Draw(img, "RGBA")
         for x, y, w, h in self.entities:
             draw.rectangle([x, y, x + w, y + h], fill="#eeeeeecc", outline="white")
         bg = Image.new("RGB", img.size, "gray")
