@@ -95,5 +95,7 @@ class PromptSynth:
         img = Image.new("RGB", (256, 256), "gray")
         draw = ImageDraw.Draw(img)
         for x, y, w, h in self.entities:
-            draw.rectangle([x, y, x + w, y + h], fill="white")
+            draw.rectangle(
+                [x, y, x + w, y + h], fill=(120, 120, 120, 0), outline="white"
+            )
         return img

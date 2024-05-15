@@ -117,7 +117,7 @@ def init():
 
 
 def gen():
-    return test_generate_article([v for _, v in markov_models])
+    return test_generate_article([markov_models[k] for k in markov_models])
 
 
 def gen_with(models):
