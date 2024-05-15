@@ -45,7 +45,8 @@ class PromptSynth:
             guidance_scale=7.5,
         ).images[0]
         bts = io.BytesIO()
-        image.save(bts, format="jpeg")
+        # image.save(bts, format="jpeg")
+        ref.save(bts, format="jpeg")
         bts.seek(0)
         return bts
 
