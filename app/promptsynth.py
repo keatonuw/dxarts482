@@ -44,6 +44,7 @@ class PromptSynth:
             strength=0.5,
             num_inference_steps=50,
             guidance_scale=7.5,
+            negative_prompt="unclear, wall, plain, empty",
         ).images[0]
         bts = io.BytesIO()
         image.save(bts, format="jpeg")
@@ -54,22 +55,37 @@ class PromptSynth:
     # Consume positions (a list of (x, y, w, h) rectangles) to inform state
     def consume_positions(self, positions):
         # forget the past
+        prev_amt = len(self.entities)
         self.entities = [
             (x / 1280 * 256, y / 720 * 256, w / 1280 * 256, h / 720 * 256)
             for x, y, w, h in positions
         ]
+        cur_amt = len(self.entities)
+        delta = cur_amt - prev_amt
+
         # determine the future
-        idx = 0
-        if len(self.entities) < 1:
-            # no objects
-            idx = random.randint(0, 3)
-        elif len(self.entities) <= 1:
-            # few objects
-            idx = 3
-        else:
-            # many objects
-            idx = random.randint(4, len(states) - 1)
-        self.state = states[idx % len(states)]
+        if self.state == "ai":
+            if delta >= 0 and cur_amt > 1:
+                self.state = "ai"
+            else:
+                self.state = random.choice(["eigen", "local"])
+        elif self.state == "eigen":
+            if delta >= 0 and cur_amt > 1:
+                self.state = "eigen"
+            else:
+                self.state = random.choice(["local", "web"])
+        elif self.state == "local":
+            if delta >= 0:
+                self.state = "ai"
+            else:
+                self.state = random.choice(["web", "local"])
+        elif self.state == "web":
+            if delta >= 0:
+                self.state = random.choice(["web", "qr", "code", "local"])
+            else:
+                self.state = random.choice(["web", "qr", "code"])
+        else:  # code or qr
+            self.state = random.choice(["web", "qr", "code"])
 
     # Gets the current system state, as a string for TD client to interpret
     def get_state(self) -> Text:
