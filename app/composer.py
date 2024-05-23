@@ -122,5 +122,14 @@ def gen():
     return test_generate_article([markov_models[k] for k in markov_models])
 
 
+def prompt() -> str:
+    m = random.choice(list(markov_models.values()))
+    p = ""
+    s = m.make_sentence()
+    if s is not None:
+        p = m.make_sentence()
+    return str(p)
+
+
 def gen_with(models):
     return test_generate_article([markov_models[k] for k in models if k in models])

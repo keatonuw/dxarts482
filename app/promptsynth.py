@@ -41,7 +41,7 @@ class PromptSynth:
         image = self.pipe(
             prompt=prompt,
             image=ref,
-            strength=0.75,
+            strength=0.5,
             num_inference_steps=50,
             guidance_scale=7.5,
         ).images[0]
@@ -91,7 +91,10 @@ class PromptSynth:
         return self.state
 
     def __get_text_prompt(self):
-        return "digital hacked city security camera overlooking an empty space. dark and glitchy cctv street footage l34ks at night. black and white grainy and lossy footage."
+        return (
+            "digital hacked city security camera overlooking an empty space. dark and glitchy cctv street footage l34ks at night. black and white grainy and lossy footage. "
+            + composer.prompt()
+        )
 
     def __get_image_prompt(self):
         img = Image.fromarray(
