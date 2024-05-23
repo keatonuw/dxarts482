@@ -41,7 +41,7 @@ class PromptSynth:
         image = self.pipe(
             prompt=prompt,
             image=ref,
-            strength=0.5,
+            strength=0.8,
             num_inference_steps=50,
             guidance_scale=7.5,
             negative_prompt="unclear, wall, plain, empty",
