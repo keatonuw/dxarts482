@@ -114,6 +114,8 @@ markov_models: Dict[str, markovify.Text] = {}
 def init():
     markov_models["gpt"] = create_save_load("gpt-tweets")
     markov_models["ibos"] = create_save_load("ibos-select")
+    markov_models["t4t"] = create_save_load("dysphoria")
+    markov_models["tulpa"] = create_save_load("tulpa")
 
 
 def gen():
