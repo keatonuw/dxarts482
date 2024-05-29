@@ -28,10 +28,11 @@ replacement_targets = [
     "enby",
     "enbies",
     "non-binary",
-    "trans",
-    "transgender",
-    "gender",
-    "dysphoria",
+    "AMAB",
+    "AFAB",
+    "race",
+    "racism",
+    "racial",
 ]
 
 replace_values = [
@@ -41,6 +42,11 @@ replace_values = [
     "CONNECTION",
     "SPIRITUALITY",
     "SHE",
+    "TULPA",
+    "REALITY",
+    "WEB",
+    "SURVEILLANCE",
+    "COMMUNITY",
 ]
 
 
