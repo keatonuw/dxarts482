@@ -5,12 +5,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>👀</title>
-  <link href="static/style.css" rel="stylesheet">
+  <link href="/static/style.css" rel="stylesheet">
 </head>
 
 <body class={{style}}>
   <div>
-    <h1>{{title}}</h1>
+    <h1>
+      {% for w in title %}
+      <a href="/page/{{w}}">{{w}}</a>
+      {% endfor %}
+    </h1>
+    <img src="/stateimg" alt="SYSTEM STATE">
     {% for type, text in body %}
     {% if type == 'main' %}
     <p>{{text}}</p>

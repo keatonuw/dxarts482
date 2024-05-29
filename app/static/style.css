@@ -5,20 +5,23 @@ body {
   margin: auto;
 }
 
-.light {
+.light,
+.light>* {
   color: black;
   background-color: white;
 }
 
 
-.dark {
+.dark,
+.dark>* {
   color: red;
   background-color: black;
   font-family: SimSong, serif;
 }
 
-.matrix {
-  color: green;
+.matrix,
+.matrix>* {
+  color: #00ff00;
   background-color: black;
   font-family: monospace;
 }
@@ -31,4 +34,14 @@ body {
 
 .fullscreen {
   width: 100%;
+}
+
+.captioned {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+}
+
+a {
+  color: red;
 }

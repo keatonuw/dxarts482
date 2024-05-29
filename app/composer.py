@@ -1,3 +1,4 @@
+from copy import Error
 from typing import Dict, List
 import os
 import random
@@ -22,6 +23,15 @@ replacement_targets = [
     "OpenAI",
     "Crypto",
     "Etherium",
+    # above: all annoying buzzwords i don't want
+    # below: words i'd rather not have generate problematic phrases w/
+    "enby",
+    "enbies",
+    "non-binary",
+    "trans",
+    "transgender",
+    "gender",
+    "dysphoria",
 ]
 
 replace_values = [
@@ -120,6 +130,22 @@ def init():
 
 def gen():
     return test_generate_article([markov_models[k] for k in markov_models])
+
+
+def prompt_gen(prompt: str):
+    m = random.choice(list(markov_models.values()))
+    title = ""
+    try:
+        title = m.make_sentence_with_start(prompt, strict=False)
+    except Exception:
+        title = m.make_sentence()
+
+    body = ""
+    try:
+        body = m.make_sentence_with_start(prompt, strict=False)
+    except Exception:
+        body = m.make_sentence()
+    return (censor(title), censor(body))
 
 
 def prompt() -> str:

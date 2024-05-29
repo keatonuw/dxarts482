@@ -27,12 +27,31 @@ class PromptSynth:
     # Generates a page of text content based on the current state
     def generate_page(self) -> Text:
         title, body = composer.gen()
+        title = title.split(" ")
         return render_template(
             "musing.html",
             title=title,
             body=body,
-            style=random.choice(["dark", "light", "matrix", "blue"]),
+            style=self.__rand_style(),
         )
+
+    # generate text content page based on a prompt
+    def generate_prompted_page(self, prompt) -> Text:
+        title, body = composer.prompt_gen(prompt)
+        return render_template(
+            "regarding.html",
+            title=title,
+            body=body,
+            style=self.__rand_style(),
+        )
+
+    # generate cool green rectangle image
+    def generate_state_image(self):
+        ref_state = self.__get_image_prompt(namp=1, rfill="black", ol="green")
+        bts = io.BytesIO()
+        ref_state.save(bts, format="jpeg")
+        bts.seek(0)
+        return bts
 
     # Generates an image response based on current state
     def generate_image(self) -> io.BytesIO:
@@ -112,13 +131,18 @@ class PromptSynth:
             + composer.prompt()
         )
 
-    def __get_image_prompt(self):
+    def __get_image_prompt(
+        self, namp=255, rfill="#aaaaaacc", bgfill="gray", ol="black"
+    ):
         img = Image.fromarray(
-            np.random.randint(0, 255, (256, 256, 4), dtype=np.dtype("uint8"))
+            np.random.randint(0, namp, (256, 256, 4), dtype=np.dtype("uint8"))
         )
         draw = ImageDraw.Draw(img, "RGBA")
         for x, y, w, h in self.entities:
-            draw.rectangle([x, y, x + w, y + h], fill="#aaaaaacc", outline="black")
-        bg = Image.new("RGB", img.size, "gray")
+            draw.rectangle([x, y, x + w, y + h], fill=rfill, outline=ol)
+        bg = Image.new("RGB", img.size, bgfill)
         bg.paste(img, mask=img.split()[3])
         return bg
+
+    def __rand_style(self):
+        return random.choice(["dark", "light", "matrix", "blue"])

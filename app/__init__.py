@@ -30,11 +30,19 @@ def create_app():
     def main():
         return synth.generate_page()
 
+    @app.route("/page/<prompt>")
+    def prompted(prompt: str):
+        return synth.generate_prompted_page(prompt)
+
+    @app.route("/stateimg")
+    def state_image():
+        return synth.generate_state_image()
+
     @app.route("/health")
     def health():
         return "I AM ALIVE!"
 
-    @app.route("/log", methods=["POST"])
+    @app.route("/log", methods=["POST", "GET"])
     def log():
         # TODO: log data from the client. will be some collection of positions.
         content = request.json
