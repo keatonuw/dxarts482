@@ -42,7 +42,7 @@ def create_app():
     def health():
         return "I AM ALIVE!"
 
-    @app.route("/log")
+    @app.route("/log", methods=["POST"])
     def log():
         # TODO: log data from the client. will be some collection of positions.
         content = request.json
