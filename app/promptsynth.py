@@ -23,6 +23,7 @@ class PromptSynth:
         self.pipe = pipe
         self.entities = []
         self.state = states[0]
+        self.prompts = []
 
     # Generates a page of text content based on the current state
     def generate_page(self) -> Text:
@@ -37,6 +38,7 @@ class PromptSynth:
 
     # generate text content page based on a prompt
     def generate_prompted_page(self, prompt) -> Text:
+        self.__ingest(prompt)
         title, body = composer.prompt_gen(prompt)
         return render_template(
             "regarding.html",
@@ -44,6 +46,9 @@ class PromptSynth:
             body=body,
             style=self.__rand_style(),
         )
+
+    def recent_prompts(self):
+        return self.prompts
 
     # generate cool green rectangle image
     def generate_state_image(self):
@@ -146,3 +151,8 @@ class PromptSynth:
 
     def __rand_style(self):
         return random.choice(["dark", "light", "matrix", "blue"])
+
+    def __ingest(self, prompt):
+        self.prompts.append(prompt)
+        if len(self.prompts) > 100:
+            self.prompts.pop(0)

@@ -34,6 +34,10 @@ def create_app():
     def prompted(prompt: str):
         return synth.generate_prompted_page(prompt)
 
+    @app.route("/prompts")
+    def prompts():
+        return synth.recent_prompts()
+
     @app.route("/stateimg")
     def state_image():
         return synth.generate_state_image()
