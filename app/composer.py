@@ -1,3 +1,4 @@
+from copy import Error
 from typing import Dict, List
 import os
 import random
@@ -22,6 +23,16 @@ replacement_targets = [
     "OpenAI",
     "Crypto",
     "Etherium",
+    # above: all annoying buzzwords i don't want
+    # below: words i'd rather not have generate problematic phrases w/
+    "enby",
+    "enbies",
+    "non-binary",
+    "AMAB",
+    "AFAB",
+    "race",
+    "racism",
+    "racial",
 ]
 
 replace_values = [
@@ -31,6 +42,11 @@ replace_values = [
     "CONNECTION",
     "SPIRITUALITY",
     "SHE",
+    "TULPA",
+    "REALITY",
+    "WEB",
+    "SURVEILLANCE",
+    "COMMUNITY",
 ]
 
 
@@ -79,7 +95,7 @@ def censor(s):
     return s
 
 
-def test_generate_article(models: List) -> tuple[str | None, List]:
+def test_generate_article(models: List):
     # want title followed by several paragraphs. ideally in some matter of feedback?
     main_model: markovify.Text = random.choice(models)
     quote_model: markovify.Text = random.choice(models)
@@ -114,10 +130,37 @@ markov_models: Dict[str, markovify.Text] = {}
 def init():
     markov_models["gpt"] = create_save_load("gpt-tweets")
     markov_models["ibos"] = create_save_load("ibos-select")
+    markov_models["t4t"] = create_save_load("dysphoria")
+    markov_models["tulpa"] = create_save_load("tulpa")
 
 
 def gen():
-    return test_generate_article([v for _, v in markov_models])
+    return test_generate_article([markov_models[k] for k in markov_models])
+
+
+def prompt_gen(prompt: str):
+    m = random.choice(list(markov_models.values()))
+    title = ""
+    try:
+        title = m.make_sentence_with_start(prompt, strict=False)
+    except Exception:
+        title = m.make_sentence()
+
+    body = ""
+    try:
+        body = m.make_sentence_with_start(prompt, strict=False)
+    except Exception:
+        body = m.make_sentence()
+    return (censor(title), censor(body))
+
+
+def prompt() -> str:
+    m = random.choice(list(markov_models.values()))
+    p = ""
+    s = m.make_sentence()
+    if s is not None:
+        p = m.make_sentence()
+    return str(p)
 
 
 def gen_with(models):

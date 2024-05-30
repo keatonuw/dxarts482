@@ -2,17 +2,18 @@
 # flask --app app run --debug
 
 from flask import Flask
-from flask import render_template
 from flask import send_file
 from flask import request
-import io
-from diffusers import StableDiffusionPipeline
-import random
+from diffusers import StableDiffusionImg2ImgPipeline
 import torch
 
 from . import promptsynth as ps
 
-pipe = StableDiffusionPipeline.from_pretrained("cw/")
+model_path = "cw/"
+pipe = StableDiffusionImg2ImgPipeline.from_pretrained(
+    model_path, torch_dtype=torch.float16
+)
+
 # TODO: need to check what is available!!!
 if torch.cuda.is_available():
     pipe.to("cuda")
@@ -28,6 +29,18 @@ def create_app():
     @app.route("/")
     def main():
         return synth.generate_page()
+
+    @app.route("/page/<prompt>")
+    def prompted(prompt: str):
+        return synth.generate_prompted_page(prompt)
+
+    @app.route("/prompts")
+    def prompts():
+        return synth.recent_prompts()
+
+    @app.route("/stateimg")
+    def state_image():
+        return synth.generate_state_image()
 
     @app.route("/health")
     def health():
@@ -60,7 +73,7 @@ def create_app():
         return send_file(
             bts,
             mimetype="image/jpeg",
-            download_name="gen.jpg",
+            download_name="gen.jpeg",
             as_attachment=True,
         )
 
